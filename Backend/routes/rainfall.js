@@ -1,6 +1,5 @@
 import express from "express";
 import { Rainfall } from "../models/rainfall.js";
-import { apiKeyAuth } from "../middleware/apiKeyAuth.js";
 import { requestLogger } from "../middleware/requestLogger.js";
 
 const router = express.Router();
