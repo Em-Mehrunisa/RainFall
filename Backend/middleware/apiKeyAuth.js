@@ -1,27 +1,27 @@
-import dotenv from "dotenv";
-dotenv.config();
+import { User } from "../models/user.js";
 
-const apiKeys = process.env.API_KEYS?.split(",") || [];
-const adminKey = process.env.ADMIN_API_KEY;
+export async function apiKeyAuth(req, res, next) {
+  try {
+    const apiKey = (req.header("x-api-key") || req.query.apiKey || "").trim();
 
-export function apiKeyAuth(req, res, next) {
-  const key = req.header("x-api-key");
+    if (!apiKey) {
+      return res
+        .status(401)
+        .json({ message: "Unauthorized: API key required" });
+    }
+    const user = await User.findOne({ apiKey });
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized: Invalid API key" });
+    }
+    req.user = {
+      id: user._id,
+      email: user.email,
+      role: user.isAdmin === true ? "Admin" : "User",
+    };
 
-  if (!key) {
-    return res.status(401).json({ message: "API key required" });
+    next();
+  } catch (error) {
+    console.error("API Key Auth Error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
-
-  // Check if it's admin
-  if (key === adminKey) {
-    req.isAdmin = true;
-    return next();
-  }
-
-  // Check normal user keys
-  if (apiKeys.includes(key)) {
-    req.isAdmin = false;
-    return next();
-  }
-
-  return res.status(403).json({ message: "Invalid API key" });
 }

@@ -5,7 +5,7 @@ import { requestLogger } from "../middleware/requestLogger.js";
 
 const router = express.Router();
 
-router.use(apiKeyAuth, requestLogger);
+router.use(requestLogger);
 /**
  * 1. Rainfall for a specified day (all locations)
  *    Example: GET /rainfall/day/2023-10-01
@@ -72,6 +72,10 @@ router.get("/all", async (req, res) => {
  * Admin-only (create, update, delete)
  */
 router.post("/", async (req, res) => {
+  if (req.user.role !== "Admin") {
+    return res.status(403).json({ message: "Admin privileges required" });
+  }
+
   try {
     const rainfall = new Rainfall(req.body);
     const saved = await rainfall.save();
@@ -84,6 +88,9 @@ router.post("/", async (req, res) => {
 });
 
 router.patch("/:id", async (req, res) => {
+  if (req.user.role !== "Admin") {
+    return res.status(403).json({ message: "Admin privileges required" });
+  }
   try {
     const updated = await Rainfall.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -97,6 +104,9 @@ router.patch("/:id", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
+  if (req.user.role !== "Admin") {
+    return res.status(403).json({ message: "Admin privileges required" });
+  }
   try {
     const deleted = await Rainfall.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ message: "Not found" });

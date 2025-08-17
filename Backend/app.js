@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import rainfallRouter from "./routes/rainfall.js";
 import authRouter from "./routes/auth.js";
+import { apiKeyAuth } from "./middleware/apiKeyAuth.js";
 
 dotenv.config({ override: true });
 
@@ -25,7 +26,7 @@ if (process.env.NODE_ENV !== "test") {
 app.use(express.json());
 
 // For all the rainfall requests redirect it to rainfall.js file
-app.use("/rainfall", rainfallRouter);
+app.use("/rainfall", apiKeyAuth, rainfallRouter);
 
 // For all the auth requests redirect it to auth.js file
 app.use("/auth", authRouter);

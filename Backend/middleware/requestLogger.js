@@ -1,13 +1,20 @@
 export function requestLogger(req, res, next) {
-  const log = {
-    ip: req.ip,
-    userAgent: req.get("User-Agent"),
-    date: new Date().toISOString(),
-    apiKey: req.header("x-api-key") || "none",
-    path: req.originalUrl,
-    method: req.method,
-  };
+  const start = Date.now();
 
-  console.log("API Request Log:", log);
+  res.on("finish", () => {
+    const log = {
+      ip: req.ip,
+      userAgent: req.get("User-Agent"),
+      date: new Date().toISOString(),
+      apiKey: req.header("x-api-key") || "none",
+      path: req.originalUrl,
+      method: req.method,
+      status: res.statusCode,
+      responseTime: `${Date.now() - start}ms`,
+    };
+
+    console.log("API Request Log:", log);
+  });
+
   next();
 }
