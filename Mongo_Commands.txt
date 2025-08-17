@@ -1,0 +1,2 @@
+Start Services: brew services start mongodb-community@8.0
+Stop Services: brew services stop mongodb-community@8.0
