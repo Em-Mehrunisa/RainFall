@@ -12,8 +12,12 @@ router.use(requestLogger);
  */
 router.get("/day/:date", async (req, res) => {
   try {
-    const date = new Date(req.params.date);
-    const data = await Rainfall.find({ date });
+    const date = req.params.date;
+    const formattedDate = date.replace(/-/g, "/");
+    const data = await Rainfall.findOne({ date: formattedDate });
+    if (!data) {
+      return res.status(404).json({ message: "No data found" });
+    }
     res.json(data);
   } catch (error) {
     res
@@ -29,6 +33,9 @@ router.get("/day/:date", async (req, res) => {
 router.get("/location/:area", async (req, res) => {
   try {
     const data = await Rainfall.find({ area: req.params.area });
+    if (!data) {
+      return res.status(404).json({ message: "No data found" });
+    }
     res.json(data);
   } catch (error) {
     res
@@ -43,8 +50,15 @@ router.get("/location/:area", async (req, res) => {
  */
 router.get("/location/:area/day/:date", async (req, res) => {
   try {
-    const date = new Date(req.params.date);
-    const data = await Rainfall.findOne({ area: req.params.area, date });
+    const date = req.params.date;
+    const formattedDate = date.replace(/-/g, "/");
+    const data = await Rainfall.findOne({
+      area: req.params.area,
+      date: formattedDate,
+    });
+    if (!data) {
+      return res.status(404).json({ message: "No data found" });
+    }
     res.json(data);
   } catch (error) {
     res
@@ -60,6 +74,9 @@ router.get("/location/:area/day/:date", async (req, res) => {
 router.get("/all", async (req, res) => {
   try {
     const data = await Rainfall.find();
+    if (!data) {
+      return res.status(404).json({ message: "No data found" });
+    }
     res.json(data);
   } catch (error) {
     res
