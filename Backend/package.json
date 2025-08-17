@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
+  "type": "module",
   "scripts": {
     "start": "nodemon app.js",
     "test": "jest --coverage --detectOpenHandles"
@@ -20,9 +21,10 @@
   "author": "muhammadtalhakhan007",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.19.2",
-    "mongodb": "^6.6.0",
-    "mongoose": "^8.3.3"
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "mongodb": "^6.18.0",
+    "mongoose": "^8.17.1"
   },
   "devDependencies": {
     "jest": "^29.7.0",
