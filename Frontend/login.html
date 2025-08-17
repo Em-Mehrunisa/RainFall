@@ -462,17 +462,14 @@
           if (response.ok) {
             showToast("Login successful! Welcome back!", "success");
 
-            // Store auth token if provided
-            if (data.token || data.apiKey) {
-              // Note: In a real application, consider using httpOnly cookies
-              console.log("Auth token received:", data.token || data.apiKey);
+            if (data.apiKey) {
+              localStorage.setItem("authToken", data.apiKey);
+              localStorage.setItem("userData", JSON.stringify(data.userData));
             }
 
-            // Redirect after successful login
             setTimeout(() => {
-              // Replace with your dashboard/home page URL
               showToast("Redirecting to dashboard...", "success");
-              // window.location.href = '/dashboard';
+              window.location.href = "/Frontend/dashboard.html";
             }, 1500);
           } else {
             // Handle server errors

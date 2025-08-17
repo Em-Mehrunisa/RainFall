@@ -52,7 +52,12 @@ router.post("/login", async (req, res) => {
     res.json({
       message: "Login successful",
       apiKey: user.apiKey,
-      isAdmin: user.isAdmin,
+      userData: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        isAdmin: user.isAdmin,
+      },
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
