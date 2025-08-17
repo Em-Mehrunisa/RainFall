@@ -1,65 +1,110 @@
 import express from "express";
-import { Alien } from "../models/alien.js";
+import { Rainfall } from "../models/rainfall.js";
+import { apiKeyAuth } from "../middleware/apiKeyAuth.js";
+import { requestLogger } from "../middleware/requestLogger.js";
 
 const router = express.Router();
 
-// For database do not use a normal request use an async request
-router.get("/", async (req, res) => {
+router.use(apiKeyAuth, requestLogger);
+/**
+ * 1. Rainfall for a specified day (all locations)
+ *    Example: GET /rainfall/day/2023-10-01
+ */
+router.get("/day/:date", async (req, res) => {
   try {
-    const aliens = await Alien.find();
-    res.json(aliens);
+    const date = new Date(req.params.date);
+    const data = await Rainfall.find({ date });
+    res.json(data);
   } catch (error) {
-    res.send("Error", +error);
+    res
+      .status(500)
+      .json({ message: "Error fetching rainfall", error: error.message });
   }
 });
 
-router.get("/:id", async (req, res) => {
+/**
+ * 2. Rainfall for a single specified location (all days)
+ *    Example: GET /rainfall/location/Erean
+ */
+router.get("/location/:area", async (req, res) => {
   try {
-    const aliens = await Alien.findById(req.params.id);
-    res.json(aliens);
+    const data = await Rainfall.find({ area: req.params.area });
+    res.json(data);
   } catch (error) {
-    res.send("Error", +error);
+    res
+      .status(500)
+      .json({ message: "Error fetching rainfall", error: error.message });
   }
-  res.send("Get Request");
 });
 
+/**
+ * 3. Rainfall for a specified day for a single specified location
+ *    Example: GET /rainfall/location/Erean/day/2023-10-01
+ */
+router.get("/location/:area/day/:date", async (req, res) => {
+  try {
+    const date = new Date(req.params.date);
+    const data = await Rainfall.findOne({ area: req.params.area, date });
+    res.json(data);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching rainfall", error: error.message });
+  }
+});
+
+/**
+ * 4. Rainfall for all days, all locations
+ *    Example: GET /rainfall/all
+ */
+router.get("/all", async (req, res) => {
+  try {
+    const data = await Rainfall.find();
+    res.json(data);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching rainfall", error: error.message });
+  }
+});
+
+/**
+ * Admin-only (create, update, delete)
+ */
 router.post("/", async (req, res) => {
-  const alien = new Alien({
-    name: req.body.name,
-    tech: req.body.tech,
-    sub: req.body.sub,
-  });
-
   try {
-    const a1 = await alien.save();
-    res.json(a1);
+    const rainfall = new Rainfall(req.body);
+    const saved = await rainfall.save();
+    res.status(201).json(saved);
   } catch (error) {
-    res.send("Error" + error);
+    res
+      .status(400)
+      .json({ message: "Error saving rainfall", error: error.message });
   }
 });
 
 router.patch("/:id", async (req, res) => {
   try {
-    const alien = await Alien.findById(req.params.id);
-    alien.sub = req.body.sub;
-    const a1 = await alien.save();
-    res.json(a1);
+    const updated = await Rainfall.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    res.json(updated);
   } catch (error) {
-    res.send("Error" + error);
+    res
+      .status(400)
+      .json({ message: "Error updating rainfall", error: error.message });
   }
 });
 
 router.delete("/:id", async (req, res) => {
   try {
-    const deletedAlien = await Alien.deleteOne({ _id: req.params.id });
-    if (deletedAlien.deletedCount === 0) {
-      return res.status(404).json({ message: "Alien not found" });
-    }
-    res.json({ message: "Alien deleted successfully" });
+    const deleted = await Rainfall.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ message: "Not found" });
+    res.json({ message: "Deleted successfully" });
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Error deleting alien", error: error.message });
+      .json({ message: "Error deleting rainfall", error: error.message });
   }
 });
 

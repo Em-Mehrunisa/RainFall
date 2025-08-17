@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import rainfallRouter from "./routes/rainfall.js";
+import authRouter from "./routes/auth.js";
 
 dotenv.config({ override: true });
 
@@ -25,6 +26,9 @@ app.use(express.json());
 
 // For all the rainfall requests redirect it to rainfall.js file
 app.use("/rainfall", rainfallRouter);
+
+// For all the auth requests redirect it to auth.js file
+app.use("/auth", authRouter);
 
 app.listen(3000, () => {
   console.log("Server started");
