@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import rainfallRouter from "./routes/rainfall.js";
 import authRouter from "./routes/auth.js";
+import cors from "cors";
 import { apiKeyAuth } from "./middleware/apiKeyAuth.js";
 
 dotenv.config({ override: true });
@@ -10,6 +11,7 @@ dotenv.config({ override: true });
 const url = process.env.MONGODB_URL;
 
 const app = express();
+app.use(cors());
 
 // Only connect to MongoDB if not in test environment
 if (process.env.NODE_ENV !== "test") {

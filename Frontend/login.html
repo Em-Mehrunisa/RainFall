@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Welcome Back</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .login-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 450px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 28px;
+        font-weight: 600;
+      }
+
+      .welcome-text {
+        text-align: center;
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 14px;
+      }
+
+      .form-group {
+        margin-bottom: 25px;
+        position: relative;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: #555;
+        font-weight: 500;
+        font-size: 14px;
+      }
+
+      input[type="email"],
+      input[type="password"] {
+        width: 100%;
+        padding: 15px 20px;
+        border: 2px solid #e1e1e1;
+        border-radius: 12px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        background: #fff;
+        outline: none;
+      }
+
+      input:focus {
+        border-color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+      }
+
+      input.error {
+        border-color: #e74c3c;
+        animation: shake 0.5s ease-in-out;
+      }
+
+      input.success {
+        border-color: #27ae60;
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-5px);
+        }
+        75% {
+          transform: translateX(5px);
+        }
+      }
+
+      .error-message {
+        color: #e74c3c;
+        font-size: 12px;
+        margin-top: 5px;
+        display: none;
+        animation: fadeIn 0.3s ease-in-out;
+      }
+
+      .error-message.show {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .login-btn {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .login-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+      }
+
+      .login-btn:active {
+        transform: translateY(0);
+      }
+
+      .login-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .loader {
+        display: none;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 1s ease-in-out infinite;
+        margin-right: 10px;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Toast Styles */
+      .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 12px;
+        color: white;
+        font-weight: 500;
+        z-index: 1000;
+        transform: translateX(400px);
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        max-width: 300px;
+      }
+
+      .toast.show {
+        transform: translateX(0);
+      }
+
+      .toast.error {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+      }
+
+      .toast.success {
+        background: linear-gradient(135deg, #27ae60, #2ecc71);
+      }
+
+      .toast.warning {
+        background: linear-gradient(135deg, #f39c12, #e67e22);
+      }
+
+      .toast-close {
+        position: absolute;
+        top: 5px;
+        right: 10px;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+        opacity: 0.8;
+      }
+
+      .toast-close:hover {
+        opacity: 1;
+      }
+
+      .register-link {
+        text-align: center;
+        margin-top: 20px;
+        color: #666;
+      }
+
+      .register-link a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .register-link a:hover {
+        text-decoration: underline;
+      }
+
+      .divider {
+        display: flex;
+        align-items: center;
+        margin: 25px 0;
+        color: #999;
+        font-size: 14px;
+      }
+
+      .divider::before,
+      .divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: #e1e1e1;
+      }
+
+      .divider span {
+        padding: 0 15px;
+      }
+
+      @media (max-width: 480px) {
+        .login-container {
+          padding: 30px 20px;
+        }
+
+        .toast {
+          right: 10px;
+          left: 10px;
+          max-width: none;
+          transform: translateY(-100px);
+        }
+
+        .toast.show {
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <h1>Welcome Back</h1>
+      <p class="welcome-text">Sign in to your account to continue</p>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" required />
+          <div class="error-message" id="emailError"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required />
+          <div class="error-message" id="passwordError"></div>
+        </div>
+
+        <button type="submit" class="login-btn" id="loginBtn">
+          <div class="loader" id="loader"></div>
+          <span id="btnText">Sign In</span>
+        </button>
+      </form>
+
+      <div class="divider">
+        <span>or</span>
+      </div>
+
+      <div class="register-link">
+        Don't have an account? <a href="signup.html">Create Account</a>
+      </div>
+    </div>
+
+    <script>
+      // Form elements
+      const form = document.getElementById("loginForm");
+      const emailInput = document.getElementById("email");
+      const passwordInput = document.getElementById("password");
+      const loginBtn = document.getElementById("loginBtn");
+      const loader = document.getElementById("loader");
+      const btnText = document.getElementById("btnText");
+
+      // Error message elements
+      const emailError = document.getElementById("emailError");
+      const passwordError = document.getElementById("passwordError");
+
+      // Validation patterns
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      // Real-time validation
+      emailInput.addEventListener("input", validateEmail);
+      passwordInput.addEventListener("input", validatePassword);
+
+      function validateEmail() {
+        const email = emailInput.value.trim();
+
+        if (email.length === 0) {
+          showFieldError(emailInput, emailError, "");
+          return false;
+        }
+
+        if (!emailPattern.test(email)) {
+          showFieldError(
+            emailInput,
+            emailError,
+            "Please enter a valid email address"
+          );
+          return false;
+        }
+
+        showFieldSuccess(emailInput, emailError);
+        return true;
+      }
+
+      function validatePassword() {
+        const password = passwordInput.value;
+
+        if (password.length === 0) {
+          showFieldError(passwordInput, passwordError, "");
+          return false;
+        }
+
+        if (password.length < 6) {
+          showFieldError(
+            passwordInput,
+            passwordError,
+            "Password must be at least 6 characters long"
+          );
+          return false;
+        }
+
+        showFieldSuccess(passwordInput, passwordError);
+        return true;
+      }
+
+      function showFieldError(input, errorElement, message) {
+        input.classList.remove("success");
+        input.classList.add("error");
+        errorElement.textContent = message;
+        errorElement.classList.add("show");
+      }
+
+      function showFieldSuccess(input, errorElement) {
+        input.classList.remove("error");
+        input.classList.add("success");
+        errorElement.classList.remove("show");
+      }
+
+      // Toast notification function
+      function showToast(message, type = "error") {
+        // Remove existing toast
+        const existingToast = document.querySelector(".toast");
+        if (existingToast) {
+          existingToast.remove();
+        }
+
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `
+                <button class="toast-close">&times;</button>
+                ${message}
+            `;
+
+        document.body.appendChild(toast);
+
+        // Show toast
+        setTimeout(() => {
+          toast.classList.add("show");
+        }, 100);
+
+        // Auto hide after 5 seconds
+        const autoHideTimer = setTimeout(() => {
+          hideToast(toast);
+        }, 5000);
+
+        // Close button functionality
+        toast.querySelector(".toast-close").addEventListener("click", () => {
+          clearTimeout(autoHideTimer);
+          hideToast(toast);
+        });
+      }
+
+      function hideToast(toast) {
+        toast.classList.remove("show");
+        setTimeout(() => {
+          if (toast && toast.parentNode) {
+            toast.parentNode.removeChild(toast);
+          }
+        }, 300);
+      }
+
+      // Form submission
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        // Validate all fields
+        const isEmailValid = validateEmail();
+        const isPasswordValid = validatePassword();
+
+        if (!isEmailValid || !isPasswordValid) {
+          showToast("Please fix the errors above before submitting", "error");
+          return;
+        }
+
+        // Show loading state
+        loginBtn.disabled = true;
+        loader.style.display = "inline-block";
+        btnText.textContent = "Signing In...";
+
+        // Prepare form data
+        const formData = {
+          email: emailInput.value.trim(),
+          password: passwordInput.value,
+        };
+
+        try {
+          // Make API call
+          const response = await fetch("http://localhost:3000/auth/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            showToast("Login successful! Welcome back!", "success");
+
+            // Store auth token if provided
+            if (data.token || data.apiKey) {
+              // Note: In a real application, consider using httpOnly cookies
+              console.log("Auth token received:", data.token || data.apiKey);
+            }
+
+            // Redirect after successful login
+            setTimeout(() => {
+              // Replace with your dashboard/home page URL
+              showToast("Redirecting to dashboard...", "success");
+              // window.location.href = '/dashboard';
+            }, 1500);
+          } else {
+            // Handle server errors
+            let errorMessage = "Login failed. Please try again.";
+
+            if (response.status === 401) {
+              errorMessage =
+                "Invalid email or password. Please check your credentials.";
+            } else if (response.status === 429) {
+              errorMessage = "Too many login attempts. Please try again later.";
+            } else if (data.message || data.error) {
+              errorMessage = data.message || data.error;
+            }
+
+            showToast(errorMessage, "error");
+
+            // Handle specific field errors
+            if (data.errors) {
+              if (data.errors.email) {
+                showFieldError(emailInput, emailError, data.errors.email);
+              }
+              if (data.errors.password) {
+                showFieldError(
+                  passwordInput,
+                  passwordError,
+                  data.errors.password
+                );
+              }
+            }
+
+            // Clear password on failed login for security
+            passwordInput.value = "";
+            passwordInput.classList.remove("success");
+          }
+        } catch (error) {
+          console.error("Login error:", error);
+          if (error.name === "TypeError" && error.message.includes("fetch")) {
+            showToast(
+              "Unable to connect to server. Please check if the server is running.",
+              "error"
+            );
+          } else {
+            showToast(
+              "An unexpected error occurred. Please try again.",
+              "error"
+            );
+          }
+          passwordInput.value = "";
+          passwordInput.classList.remove("success");
+        } finally {
+          loginBtn.disabled = false;
+          loader.style.display = "none";
+          btnText.textContent = "Sign In";
+        }
+      });
+    </script>
+  </body>
+</html>
