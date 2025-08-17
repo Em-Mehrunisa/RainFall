@@ -14,7 +14,7 @@ router.get("/day/:date", async (req, res) => {
   try {
     const date = req.params.date;
     const formattedDate = date.replace(/-/g, "/");
-    const data = await Rainfall.findOne({ date: formattedDate });
+    const data = await Rainfall.find({ date: formattedDate });
     if (!data) {
       return res.status(404).json({ message: "No data found" });
     }

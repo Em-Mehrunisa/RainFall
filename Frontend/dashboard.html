@@ -287,6 +287,7 @@
         border-radius: 6px;
         font-size: 12px;
         cursor: pointer;
+        margin-top: 10px;
         font-weight: 500;
         transition: all 0.2s ease;
       }
@@ -623,6 +624,12 @@
         const searchType = document.getElementById("searchType").value;
         const location = document.getElementById("location").value.trim();
         const searchDate = document.getElementById("searchDate").value;
+        function formatDateToDDMMYYYY(dateStr) {
+          const [year, month, day] = dateStr.split("-");
+          return `${day}-${month}-${year}`;
+        }
+
+        const formattedDate = formatDateToDDMMYYYY(searchDate);
 
         let url = "http://localhost:3000/rainfall/";
 
@@ -636,7 +643,7 @@
               showToast("Please select a date", "error");
               return;
             }
-            url += `day/${searchDate}`;
+            url += `day/${formattedDate}`;
             break;
           case "location":
             if (!location) {
@@ -650,7 +657,9 @@
               showToast("Please enter both location and date", "error");
               return;
             }
-            url += `location/${encodeURIComponent(location)}/day/${searchDate}`;
+            url += `location/${encodeURIComponent(
+              location
+            )}/day/${formattedDate}`;
             break;
         }
 
